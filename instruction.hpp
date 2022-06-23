@@ -53,32 +53,10 @@ class Instruction {
 
   Instruction() = default;
   void Init() {
-    op_type = LUI,  rs1 = 0, rs2 = 0,
+    op_type = LUI, rs1 = 0, rs2 = 0,
     rd = 0, imm = 0, shamt = 0;
   }
 
-//  void Print() {
-//    std::string ca;
-//    std::bitset<32> bits;
-//    ca += "opName = " + opName[op_type] + "\n";
-//    bits = opcode;
-//    ca += "opCode = " + bits.to_string() + "\n";
-//    bits = rs1;
-//    ca += "rs1 = " + bits.to_string() + "\n";
-//    bits = rs2;
-//    ca += "rs2 = " + bits.to_string() + "\n";
-//    bits = rd;
-//    ca += "rd = " + bits.to_string() + "\n";
-//    bits = funct3;
-//    ca += "funct3 = " + bits.to_string() + "\n";
-//    bits = funct7;
-//    ca += "funct7 = " + bits.to_string() + "\n";
-//    bits = imm;
-//    ca += "imm = " + bits.to_string() + "\n";
-//    bits = shamt;
-//    ca += "shamt = " + bits.to_string() + "\n";
-//
-//  }
   friend std::ostream &operator<<(std::ostream &os, const Instruction &instruction) {
     os << "inst type: " << insTypeName[ToInsType[instruction.op_type]]
        << opName[instruction.op_type] << ", "
@@ -124,7 +102,6 @@ class Decoder {
           case 0b110: return BLTU;
           case 0b111: return BGEU;
         }
-
       }
       case 0b0000011: {
         switch (func3) {
@@ -134,7 +111,6 @@ class Decoder {
           case 0b100: return LBU;
           case 0b101: return LHU;
         }
-
       }
       case 0b0100011: {
         switch (func3) {
@@ -142,7 +118,6 @@ class Decoder {
           case 0b001: return SH;
           case 0b010: return SW;
         }
-
       }
       case 0b0010011: {
         switch (func3) {
@@ -155,7 +130,6 @@ class Decoder {
           case 0b001: return SLLI;
           case 0b101: return (func7 != 0) ? SRAI : SRLI;
         }
-
       }
       case 0b0110011: {
         switch (func3) {
@@ -168,26 +142,19 @@ class Decoder {
           case 0b110: return OR;
           case 0b111: return AND;
         }
-
       }
     }
   }
 
   static void decode(uint32_t ins, Instruction &ins_ca) {
     ins_ca.Init();
-//    ins_ca.opcode = getPart(ins, 6, 0);
-//    ins_ca.funct3 = getPart(ins, 14, 12);
-//    ins_ca.funct7 = getPart(ins, 31, 25);
     ins_ca.op_type = getOpType(getPart(ins, 6, 0), getPart(ins, 14, 12), getPart(ins, 31, 25));
     instructionType insType_ca = ToInsType[ins_ca.op_type];
     ins_ca.imm = getImm(insType_ca, ins);
-    if (insType_ca != U_type && insType_ca != J_type)
-    ins_ca.rs1 = getPart(ins, 19, 15);
-    if (insType_ca == R_type || insType_ca == S_type || insType_ca == B_type)
-    ins_ca.rs2 = getPart(ins, 24, 20);
-    if (insType_ca != S_type && insType_ca != B_type)
-    ins_ca.rd = getPart(ins, 11, 7);
-    ins_ca.shamt = ins >> 20 & 0b111111;
+    if (insType_ca != U_type && insType_ca != J_type)ins_ca.rs1 = getPart(ins, 19, 15);
+    if (insType_ca == R_type || insType_ca == S_type || insType_ca == B_type)ins_ca.rs2 = getPart(ins, 24, 20);
+    if (insType_ca != S_type && insType_ca != B_type)ins_ca.rd = getPart(ins, 11, 7);
+    if (insType_ca == I_type)ins_ca.shamt = ins >> 20 & 0b111111;
   }
 
   static uint32_t getImm(const instructionType &ins_type, uint32_t ins) {
