@@ -3,4 +3,4 @@ project(RISC_V)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(code decoder_tester.cpp memory.hpp instruction.hpp CPU.hpp)
+add_executable(code main.cpp memory.hpp instruction.hpp CPU.hpp)
