@@ -98,45 +98,45 @@ struct Tuple {
   }
 };
 
-std::map<Tuple, opType> ToOpType = {
-    {Tuple("0110111", "0", "0"), LUI},
-    {Tuple("0010111", "0", "0"), AUIPC},
-    {Tuple("1101111", "0", "0"), JAL},
-    {Tuple("1100111", "000", "0"), JALR},
-    {Tuple("1100011", "000", "0"), BEQ},
-    {Tuple("1100011", "001", "0"), BNE},
-    {Tuple("1100011", "100", "0"), BLT},
-    {Tuple("1100011", "101", "0"), BGE},
-    {Tuple("1100011", "110", "0"), BLTU},
-    {Tuple("1100011", "111", "0"), BGEU},
-    {Tuple("0000011", "000", "0"), LB},
-    {Tuple("0000011", "001", "0"), LH},
-    {Tuple("0000011", "010", "0"), LW},
-    {Tuple("0000011", "100", "0"), LBU},
-    {Tuple("0000011", "101", "0"), LHU},
-    {Tuple("0100011", "000", "0"), SB},
-    {Tuple("0100011", "001", "0"), SH},
-    {Tuple("0100011", "010", "0"), SW},
-    {Tuple("0010011", "000", "0"), ADDI},
-    {Tuple("0010011", "010", "0"), SLTI},
-    {Tuple("0010011", "011", "0"), SLTIU},
-    {Tuple("0010011", "100", "0"), XORI},
-    {Tuple("0010011", "110", "0"), ORI},
-    {Tuple("0010011", "111", "0"), ANDI},
-    {Tuple("0010011", "001", "0000000"), SLLI},
-    {Tuple("0010011", "101", "0000000"), SRLI},
-    {Tuple("0010011", "101", "0100000"), SRAI},
-    {Tuple("0110011", "000", "0000000"), ADD},
-    {Tuple("0110011", "000", "0100000"), SUB},
-    {Tuple("0110011", "001", "0000000"), SLL},
-    {Tuple("0110011", "010", "0000000"), SLT},
-    {Tuple("0110011", "011", "0000000"), SLTU},
-    {Tuple("0110011", "100", "0000000"), XOR},
-    {Tuple("0110011", "101", "0000000"), SRL},
-    {Tuple("0110011", "101", "0100000"), SRA},
-    {Tuple("0110011", "110", "0000000"), OR},
-    {Tuple("0110011", "111", "0000000"), AND}
-};
+//std::map<Tuple, opType> ToOpType = {
+//    {Tuple("0110111", "0", "0"), LUI},
+//    {Tuple("0010111", "0", "0"), AUIPC},
+//    {Tuple("1101111", "0", "0"), JAL},
+//    {Tuple("1100111", "000", "0"), JALR},
+//    {Tuple("1100011", "000", "0"), BEQ},
+//    {Tuple("1100011", "001", "0"), BNE},
+//    {Tuple("1100011", "100", "0"), BLT},
+//    {Tuple("1100011", "101", "0"), BGE},
+//    {Tuple("1100011", "110", "0"), BLTU},
+//    {Tuple("1100011", "111", "0"), BGEU},
+//    {Tuple("0000011", "000", "0"), LB},
+//    {Tuple("0000011", "001", "0"), LH},
+//    {Tuple("0000011", "010", "0"), LW},
+//    {Tuple("0000011", "100", "0"), LBU},
+//    {Tuple("0000011", "101", "0"), LHU},
+//    {Tuple("0100011", "000", "0"), SB},
+//    {Tuple("0100011", "001", "0"), SH},
+//    {Tuple("0100011", "010", "0"), SW},
+//    {Tuple("0010011", "000", "0"), ADDI},
+//    {Tuple("0010011", "010", "0"), SLTI},
+//    {Tuple("0010011", "011", "0"), SLTIU},
+//    {Tuple("0010011", "100", "0"), XORI},
+//    {Tuple("0010011", "110", "0"), ORI},
+//    {Tuple("0010011", "111", "0"), ANDI},
+//    {Tuple("0010011", "001", "0000000"), SLLI},
+//    {Tuple("0010011", "101", "0000000"), SRLI},
+//    {Tuple("0010011", "101", "0100000"), SRAI},
+//    {Tuple("0110011", "000", "0000000"), ADD},
+//    {Tuple("0110011", "000", "0100000"), SUB},
+//    {Tuple("0110011", "001", "0000000"), SLL},
+//    {Tuple("0110011", "010", "0000000"), SLT},
+//    {Tuple("0110011", "011", "0000000"), SLTU},
+//    {Tuple("0110011", "100", "0000000"), XOR},
+//    {Tuple("0110011", "101", "0000000"), SRL},
+//    {Tuple("0110011", "101", "0100000"), SRA},
+//    {Tuple("0110011", "110", "0000000"), OR},
+//    {Tuple("0110011", "111", "0000000"), AND}
+//};
 
 class Instruction {
  public:
@@ -203,17 +203,67 @@ class Decoder {
   }
 
   static opType getOpType(uint32_t &opcode, uint32_t &func3, uint32_t &func7) {
-    Tuple ca(opcode, func3, func7);
-    auto res = ToOpType.find(ca);
-    if (res != ToOpType.end())return res->second;
-    func7 = 0;
-    ca = Tuple(opcode, func3, 0);
-    res = ToOpType.find(ca);
-    if (res != ToOpType.end())return res->second;
-    func3 = 0;
-    ca = Tuple(opcode, 0, 0);
-    res = ToOpType.find(ca);
-    return res->second;
+    switch (opcode) {
+      case 0b0110111: return LUI;
+      case 0b0010111: return AUIPC;
+      case 0b1101111: return JAL;
+      case 0b1100111: return JALR;
+      case 0b1100011: {
+        switch (func3) {
+          case 0b000: return BEQ;
+          case 0b001: return BNE;
+          case 0b100: return BLT;
+          case 0b101: return BGE;
+          case 0b110: return BLTU;
+          case 0b111: return BGEU;
+        }
+
+      }
+      case 0b0000011: {
+        switch (func3) {
+          case 0b000: return LB;
+          case 0b001: return LH;
+          case 0b010: return LW;
+          case 0b100: return LBU;
+          case 0b101: return LHU;
+        }
+
+      }
+      case 0b0100011: {
+        switch (func3) {
+          case 0b000: return SB;
+          case 0b001: return SH;
+          case 0b010: return SW;
+        }
+
+      }
+      case 0b0010011: {
+        switch (func3) {
+          case 0b000: return ADDI;
+          case 0b010: return SLTI;
+          case 0b011: return SLTIU;
+          case 0b100: return XORI;
+          case 0b110: return ORI;
+          case 0b111: return ANDI;
+          case 0b001: return SLLI;
+          case 0b101: return (func7 != 0) ? SRAI : SRLI;
+        }
+
+      }
+      case 0b0110011: {
+        switch (func3) {
+          case 0b000: return (func7 != 0) ? SUB : ADD;
+          case 0b001: return SLL;
+          case 0b010: return SLT;
+          case 0b011: return SLTU;
+          case 0b100: return XOR;
+          case 0b101: return (func7 != 0) ? SRA : SRL;
+          case 0b110: return OR;
+          case 0b111: return AND;
+        }
+
+      }
+    }
   }
 
   static void decode(uint32_t ins, Instruction &ins_ca) {
